@@ -179,7 +179,10 @@ function renderApp() {
 
 function handleQuizApp() {
   renderApp();
+  //handleStartClicked();
   //handleSubmitClicked();
+  //handleNextClicked();
+  //handleAgainClicked();
 }
 
 $(handleQuizApp);
