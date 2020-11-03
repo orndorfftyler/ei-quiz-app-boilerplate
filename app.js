@@ -86,14 +86,12 @@ const store = {
   quizStarted: false,
   questionNumber: 0,
   score: 0,
-  //potential values: start, question, check, final 
+  //potential values of view: start, question, check, final 
   //(changed when submit button clicked)
-  view: 'question'
+  view: 'start'
 };
 
-
-
-function scoreKeeper() {
+function scoreKeeper() {    //used by multiple render functions
   let num = store.questionNumber;
   let score = store.score;
   return '\
@@ -103,46 +101,60 @@ function scoreKeeper() {
 ';
 }
 
+//---------------------------startRender and helper functions
+
+function startBuilder() {
+  return '\
+    <h2>Want to test your knowledge of Florida?</h2>\
+    <form>\
+        <button id="start" type="submit">Begin</button>\
+    </form>\
+  '
+}
+
+
+function startRender() {
+  let startHeader = '<h1>Florida Quiz</h1>';
+  $('header').html(startHeader);
+
+  let startMain = startBuilder();
+  $('main').html(startMain);
+}
+//---------------------------end of startRender and helper functions
+
+//---------------------------questionRender and helper functions
+
 function qGrabber() {
   let num = store.questionNumber;
-  return store.questions[num].question;
+  let q = store.questions[num].question;
+  let a = store.questions[num].answers;
+  return [q,a];
 }
-
-function aGrabber() {
-  let num = store.questionNumber;
-  return store.questions[num].answers;
-}
-
 
 function qBuilder() {
-  let question = qGrabber();
-  let answers = aGrabber();
+  let qa = qGrabber();
   return '\
-    <h2>' + question + '</h2>\
+    <h2>' + qa[0] + '</h2>\
     <form>\
         <div>\
             <input id="a1" name="q" type="radio" value="Answer1">\
-            <label for="a1">' + answers[0] + '</label>\
+            <label for="a1">' + qa[1][0] + '</label>\
         </div>\
         <div>\
             <input id="b1" name="q" type="radio" value="Answer2">\
-            <label for="b1">' + answers[1] + '</label>\
+            <label for="b1">' + qa[1][1] + '</label>\
         </div>\
         <div>\
             <input id="c1" name="q" type="radio" value="Answer3">\
-            <label for="c1">' + answers[2] + '</label>\
+            <label for="c1">' + qa[1][2] + '</label>\
         </div>\
         <div>\
             <input id="d1" name="q" type="radio" value="Answer4">\
-            <label for="d1">' + answers[3] + '</label>\
+            <label for="d1">' + qa[1][3] + '</label>\
         </div>\
-        <button type="submit">Submit</button>\
+        <button id="question" type="submit">Submit</button>\
     </form>\
 ';
-}
-
-function startRender() {
-
 }
 
 function questionRender() {
@@ -153,15 +165,93 @@ function questionRender() {
   $('main').html(question);
 }
 
-function checkRender() {
+//---------------------------end of questionRender and helper functions
 
+//---------------------------checkRender and helper functions
+
+function correct() {
+  return '\
+    <h2>Correct!</h2>\
+    <p>Good job!</p>\
+    <form>\
+        <button id="check" type="submit">Next</button>\
+    </form>\
+  ';
 }
 
-function finalRender() {
-
+function incorrect(rightAnswer) {
+  return '\
+  <h2>Incorrect</h2>\
+  <p>Correct answer was '+ rightAnswer +'</p>\
+  <form>\
+      <button id="check" type="submit">Next</button>\
+  </form>\
+';
 }
 
-function renderApp() {
+function checkRender(state,rightAnswer) {
+  let score = scoreKeeper();
+  $('header').html(score);
+  
+  if (state) {
+    let congrats = correct();
+    $('main').html(congrats);
+  
+  } else {
+    let niceTry = incorrect(rightAnswer);
+    $('main').html(niceTry);
+  }
+}
+
+//---------------------------end of checkRender and helper functions
+
+//---------------------------finalRender and helper functions
+
+function finalScore() {
+  let score = store.score;
+  return '\
+    <h2>Final Score: '+ score +'/5</h2>\
+  ';
+}
+
+function pass() {
+  let fScore = finalScore();
+  return fScore +'\
+    <p>Congrats! Your knowledge of Florida is vast.</p>\
+    <form>\
+        <button id="final" type="submit">Again</button>\
+    </form>\
+    ';
+}
+
+function fail() {
+  let fScore = finalScore();
+  return fScore +'\
+    <p>Good attempt!</p>\
+    <form>\
+        <button id="final" type="submit">Again</button>\
+    </form>\
+    ';
+    
+}
+
+function finalRender(state) {
+  let finalHeader = '<h1>Florida Quiz</h1>';
+  $('header').html(finalHeader);
+
+  if (state) {
+    let passVal = pass();
+    $('main').html(passVal);
+  
+  } else {
+    let failVal = fail();
+    $('main').html(failVal);
+  }
+}
+
+//---------------------------end of finalRender and helper functions
+
+function renderApp(state, rightAnswer) {
   if (store.view == 'start') {
     startRender();
   }
@@ -169,19 +259,66 @@ function renderApp() {
     questionRender();
   }
   if (store.view == 'check') {
-    checkRender();
+    checkRender(state, rightAnswer);
   }
   if (store.view == 'final') {
-    finalRender();
+    finalRender(state);
   }
 
 }
 
+function handleStartClicked() {
+  $('main').on('click', '#start', function(event) {
+    event.preventDefault(); 
+    store.view = 'question';
+    renderApp();
+  });
+};
+
+function qGrader(answer, qNum) {
+  let correct = store.questions[qNum].correctAnswer;
+  if (answer == correct) {
+    store.score ++;
+    return [true, correct];
+  } else {
+    return [false, correct];
+  }
+}
+
+function handleSubmitClicked() {
+  $('main').on('click', '#question', function(event) {
+    event.preventDefault(); 
+
+    let answer = $("input[name='q']:checked").siblings('label').text();
+    let state = qGrader(answer,store.questionNumber); // no -1
+
+    store.view = 'check';
+
+    renderApp(state[0], state[1]);
+  });
+};
+
+function questionOrFinalView() {
+  if (store.questionNumber >= 5) {
+    store.view = 'final';
+  } else {
+    store.view = 'question';
+  }
+}
+
+function handleNextClicked() {
+
+  event.preventDefault(); 
+  store.questionNumber ++;
+  questionOrFinalView();
+  renderApp();
+}
+
 function handleQuizApp() {
   renderApp();
-  //handleStartClicked();
-  //handleSubmitClicked();
-  //handleNextClicked();
+  handleStartClicked();
+  handleSubmitClicked();
+  handleNextClicked();
   //handleAgainClicked();
 }
 
