@@ -1,6 +1,3 @@
-/*
- * Example store structure
- */
 /**
  * 
  * Technical requirements:
@@ -12,7 +9,7 @@
  *
  * You may add attributes (classes, ids, etc) to the existing HTML elements, or link stylesheets or additional scripts if necessary
  *
- * SEE BELOW FOR THE CATEGORIES OF THE TYPES OF FUNCTIONS YOU WILL BE CREATING 👇
+ * SEE BELOW FOR THE CATEGORIES OF THE TYPES OF FUNCTIONS YOU WILL BE CREATING
  * 
  */
 
@@ -45,9 +42,9 @@ const store = {
     {
       question: 'What is the most populous city in Florida?',
       answers: [
-        'Jacksonville',
-        'Miami',
         'Tallahassee',
+        'Miami',
+        'Jacksonville',
         'Orlando'
       ],
       correctAnswer: 'Jacksonville'
@@ -56,17 +53,17 @@ const store = {
       question: 'Excluding barrier islands, how many miles of coastline does Florida have?',
       answers: [
         '1350',
-        'Miami',
-        'Tallahassee',
-        'Orlando'
+        '958',
+        '576',
+        '215'
       ],
       correctAnswer: '1350'
     },
     {
       question: 'What is the largest National Park in Florida?',
       answers: [
-        'Everglades National Park',
         'Alafia River State Park',
+        'Everglades National Park',
         'Big Lagoon State Park',
         'Grayton Beach State Park'
       ],
@@ -75,9 +72,9 @@ const store = {
     {
       question: 'What is the largest freshwater lake in Florida?',
       answers: [
-        'Lake Okeechobee',
-        'Lake Istokpoga',
         'Lake Eustis',
+        'Lake Istokpoga',
+        'Lake Okeechobee',
         'Crescent Lake'
       ],
       correctAnswer: 'Lake Okeechobee'
@@ -92,7 +89,7 @@ const store = {
 };
 
 function scoreKeeper() {    //used by multiple render functions
-  let num = store.questionNumber;
+  let num = store.questionNumber + 1;
   let score = store.score;
   return '\
     <h1>Florida Quiz</h1>\
@@ -101,7 +98,7 @@ function scoreKeeper() {    //used by multiple render functions
 ';
 }
 
-//---------------------------startRender and helper functions
+//---------------------------startRender() and helper functions
 
 function startBuilder() {
   return '\
@@ -112,7 +109,6 @@ function startBuilder() {
   '
 }
 
-
 function startRender() {
   let startHeader = '<h1>Florida Quiz</h1>';
   $('header').html(startHeader);
@@ -120,14 +116,14 @@ function startRender() {
   let startMain = startBuilder();
   $('main').html(startMain);
 }
-//---------------------------end of startRender and helper functions
+//---------------------------end of startRender() and helper functions
 
-//---------------------------questionRender and helper functions
+//---------------------------questionRender() and helper functions
 
 function qGrabber() {
   let num = store.questionNumber;
   let q = store.questions[num].question;
-  let a = store.questions[num].answers;
+  let a = store.questions[num].answers; // a will be an array of 4 strings
   return [q,a];
 }
 
@@ -165,9 +161,9 @@ function questionRender() {
   $('main').html(question);
 }
 
-//---------------------------end of questionRender and helper functions
+//---------------------------end of questionRender() and helper functions
 
-//---------------------------checkRender and helper functions
+//---------------------------checkRender() and helper functions
 
 function correct() {
   return '\
@@ -189,34 +185,37 @@ function incorrect(rightAnswer) {
 ';
 }
 
-function checkRender(state,rightAnswer) {
+function checkRender(state, rightAnswer) {
   let score = scoreKeeper();
   $('header').html(score);
-  
+
   if (state) {
     let congrats = correct();
     $('main').html(congrats);
-  
   } else {
     let niceTry = incorrect(rightAnswer);
     $('main').html(niceTry);
   }
 }
 
-//---------------------------end of checkRender and helper functions
+//---------------------------end of checkRender() and helper functions
 
-//---------------------------finalRender and helper functions
+//---------------------------finalRender() and helper functions
 
 function finalScore() {
   let score = store.score;
-  return '\
+  let final = '\
     <h2>Final Score: '+ score +'/5</h2>\
   ';
+  if (score >= 5) {
+    return pass(final);
+  } else {
+    return fail(final);
+  }
 }
 
-function pass() {
-  let fScore = finalScore();
-  return fScore +'\
+function pass(final) {
+  return final +'\
     <p>Congrats! Your knowledge of Florida is vast.</p>\
     <form>\
         <button id="final" type="submit">Again</button>\
@@ -224,34 +223,28 @@ function pass() {
     ';
 }
 
-function fail() {
-  let fScore = finalScore();
-  return fScore +'\
-    <p>Good attempt!</p>\
+function fail(final) {
+  return final +'\
+    <p>Not perfect, but good attempt!</p>\
     <form>\
         <button id="final" type="submit">Again</button>\
     </form>\
     ';
-    
 }
 
-function finalRender(state) {
+function finalRender() {
   let finalHeader = '<h1>Florida Quiz</h1>';
   $('header').html(finalHeader);
 
-  if (state) {
-    let passVal = pass();
-    $('main').html(passVal);
-  
-  } else {
-    let failVal = fail();
-    $('main').html(failVal);
-  }
+  let finalMain = finalScore();
+  $('main').html(finalMain);
 }
 
-//---------------------------end of finalRender and helper functions
+//---------------------------end of finalRender() and helper functions
 
-function renderApp(state, rightAnswer) {
+//---------------------------render() function
+
+function render(state, rightAnswer) {
   if (store.view == 'start') {
     startRender();
   }
@@ -262,16 +255,17 @@ function renderApp(state, rightAnswer) {
     checkRender(state, rightAnswer);
   }
   if (store.view == 'final') {
-    finalRender(state);
+    finalRender();
   }
-
 }
 
-function handleStartClicked() {
+//---------------------------event handler functions and helper functions
+
+function startButtonClicked() {
   $('main').on('click', '#start', function(event) {
     event.preventDefault(); 
     store.view = 'question';
-    renderApp();
+    render();
   });
 };
 
@@ -285,16 +279,15 @@ function qGrader(answer, qNum) {
   }
 }
 
-function handleSubmitClicked() {
+function questionButtonClicked() {
   $('main').on('click', '#question', function(event) {
     event.preventDefault(); 
 
     let answer = $("input[name='q']:checked").siblings('label').text();
-    let state = qGrader(answer,store.questionNumber); // no -1
+    let state = qGrader(answer, store.questionNumber); 
 
     store.view = 'check';
-
-    renderApp(state[0], state[1]);
+    render(state[0], state[1]);
   });
 };
 
@@ -306,20 +299,31 @@ function questionOrFinalView() {
   }
 }
 
-function handleNextClicked() {
+function checkButtonClicked() {
+  $('main').on('click', '#check', function(event) {
+    event.preventDefault(); 
+    store.questionNumber ++;
+    questionOrFinalView();
+    render();
+  });
+}
 
-  event.preventDefault(); 
-  store.questionNumber ++;
-  questionOrFinalView();
-  renderApp();
+function finalButtonClicked() {
+  $('main').on('click', '#final', function(event) {
+    event.preventDefault(); 
+    store.questionNumber = 0;
+    store.score = 0;
+    store.view = 'start';
+    render();
+  });
 }
 
 function handleQuizApp() {
-  renderApp();
-  handleStartClicked();
-  handleSubmitClicked();
-  handleNextClicked();
-  //handleAgainClicked();
+  render();
+  startButtonClicked();
+  questionButtonClicked();
+  checkButtonClicked();
+  finalButtonClicked();
 }
 
 $(handleQuizApp);
