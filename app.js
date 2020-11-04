@@ -93,8 +93,10 @@ function scoreKeeper() {    //used by multiple render functions
   let score = store.score;
   return '\
     <h1>Florida Quiz</h1>\
+    <div class="mobile">\
     <p>Score '+ score +'/5</p>\
     <p>Question '+ num +'/5</p>\
+    </div>\
 ';
 }
 
@@ -102,9 +104,9 @@ function scoreKeeper() {    //used by multiple render functions
 
 function startBuilder() {
   return '\
-    <h2>Want to test your knowledge of Florida?</h2>\
     <form>\
-        <button id="start" type="submit">Begin</button>\
+      <h2>Want to test your knowledge of Florida?</h2>\
+      <button id="start" type="submit">Begin</button>\
     </form>\
   '
 }
@@ -130,8 +132,8 @@ function qGrabber() {
 function qBuilder() {
   let qa = qGrabber();
   return '\
-    <h2>' + qa[0] + '</h2>\
     <form>\
+    <h2>' + qa[0] + '</h2>\
         <div>\
             <input id="a1" name="q" type="radio" value="Answer1">\
             <label for="a1">' + qa[1][0] + '</label>\
@@ -167,20 +169,20 @@ function questionRender() {
 
 function correct() {
   return '\
-    <h2>Correct!</h2>\
-    <p>Good job!</p>\
     <form>\
-        <button id="check" type="submit">Next</button>\
+      <h2>Correct!</h2>\
+      <p>Good job!</p>\
+      <button id="check" type="submit">Next</button>\
     </form>\
   ';
 }
 
 function incorrect(rightAnswer) {
   return '\
-  <h2>Incorrect</h2>\
-  <p>Correct answer was '+ rightAnswer +'</p>\
   <form>\
-      <button id="check" type="submit">Next</button>\
+    <h2>Incorrect</h2>\
+    <p>Correct answer was '+ rightAnswer +'</p>\
+    <button id="check" type="submit">Next</button>\
   </form>\
 ';
 }
@@ -216,18 +218,18 @@ function finalScore() {
 
 function pass(final) {
   return final +'\
-    <p>Congrats! Your knowledge of Florida is vast.</p>\
     <form>\
-        <button id="final" type="submit">Again</button>\
+      <p>Congrats! Your knowledge of Florida is vast.</p>\
+      <button id="final" type="submit">Again</button>\
     </form>\
     ';
 }
 
 function fail(final) {
   return final +'\
-    <p>Not perfect, but good attempt!</p>\
     <form>\
-        <button id="final" type="submit">Again</button>\
+      <p>Not perfect, but good attempt!</p>\
+      <button id="final" type="submit">Again</button>\
     </form>\
     ';
 }
@@ -284,10 +286,12 @@ function questionButtonClicked() {
     event.preventDefault(); 
 
     let answer = $("input[name='q']:checked").siblings('label').text();
-    let state = qGrader(answer, store.questionNumber); 
-
-    store.view = 'check';
-    render(state[0], state[1]);
+    
+    if (answer != "") {
+      let state = qGrader(answer, store.questionNumber); 
+      store.view = 'check';
+      render(state[0], state[1]);
+      }
   });
 };
 
