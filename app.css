@@ -81,6 +81,7 @@ button {
   background:#56F5EE;
   font-size:25px;
   font-family: 'Segoe UI', sans-serif;
+  outline:none;
 }
 
 
