@@ -90,6 +90,11 @@ const store = {
 
 function scoreKeeper() {    //used by multiple render functions
   let num = store.questionNumber + 1;
+
+  if (store.view == 'start') {
+    num = store.questionNumber;
+  }
+
   let score = store.score;
   return '\
     <h1>Florida Quiz</h1>\
@@ -112,8 +117,8 @@ function startBuilder() {
 }
 
 function startRender() {
-  let startHeader = '<h1>Florida Quiz</h1>';
-  $('header').html(startHeader);
+  let score = scoreKeeper();
+  $('header').html(score);
 
   let startMain = startBuilder();
   $('main').html(startMain);
@@ -217,8 +222,9 @@ function finalScore() {
 }
 
 function pass(final) {
-  return final +'\
+  return '\
     <form>\
+      '+ final +'\
       <p>Congrats! Your knowledge of Florida is vast.</p>\
       <button id="final" type="submit">Again</button>\
     </form>\
@@ -226,8 +232,9 @@ function pass(final) {
 }
 
 function fail(final) {
-  return final +'\
+  return '\
     <form>\
+      '+ final +'\
       <p>Not perfect, but good attempt!</p>\
       <button id="final" type="submit">Again</button>\
     </form>\
@@ -235,8 +242,8 @@ function fail(final) {
 }
 
 function finalRender() {
-  let finalHeader = '<h1>Florida Quiz</h1>';
-  $('header').html(finalHeader);
+  let score = scoreKeeper();
+  $('header').html(score);
 
   let finalMain = finalScore();
   $('main').html(finalMain);
@@ -296,17 +303,18 @@ function questionButtonClicked() {
 };
 
 function questionOrFinalView() {
-  if (store.questionNumber >= 5) {
+  if (store.questionNumber >= 4) {
     store.view = 'final';
   } else {
+    store.questionNumber ++;
     store.view = 'question';
+    console.log('q to:'+ store.questionNumber);
   }
 }
 
 function checkButtonClicked() {
   $('main').on('click', '#check', function(event) {
     event.preventDefault(); 
-    store.questionNumber ++;
     questionOrFinalView();
     render();
   });

@@ -7,30 +7,11 @@
   *
 */
 
-
-
 body {
   /*text-align: center;*/
-  background: aquamarine;
+  background:#56F5EE;
 }
 
-.mobile {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  background: brown;
-  border-radius: 20px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  width:80%;
-  background:greenyellow;
-  text-align: center;
-  border-radius: 20px;
-  margin:auto;
-}
 
 div {
   margin: 7px 0;
@@ -39,43 +20,75 @@ div {
 h1 {
   text-align: center;
   font-size: 22px;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Helvetica;
+  color: #1d781d;
 }
 
 h2 {
   text-align: center;
   margin:auto;
+  margin-bottom:20px;
   font-size:20px;
+  font-family:georgia;
+  color: #1d781d;
+}
+
+label {
+  color: #1d781d;
 }
 
 p {
   font-size: 16px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: blueviolet;
+  font-family: 'Segoe UI', sans-serif;
   text-align:center;
+  color: #1d781d;
 }
 
 header {
   margin: auto;
-  width: 80%;
-  
+  width: 85%;
 }
 
-button {
-  width: 75px;
-  margin: auto;
-  margin-top: 7px;
-  margin-bottom: 7px;
+.mobile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  background:#CEF5EE;
   border-radius: 20px;
 }
 
-@media all and (min-width: 600px) {
+form {
+  display: flex;
+  flex-direction: column;
+  width:80%;
+  background:#CEF5EE;
+  text-align: center;
+  border-radius: 20px;
+  margin:auto;
+  margin-top:20px;
+  padding:20px;
+  justify-content: space-evenly;
+}
+
+button {
+  width: 120px;
+  height:48px;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 7px;
+  border-radius: 20px;
+  color: #1d781d;
+  background:#56F5EE;
+  font-size:25px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+
+@media all and (min-width: 800px) {
 
   .mobile {
     display: flex;
     flex-direction: row;
-    /*margin: auto;*/
-    /*margin-left:20vw;*/
   }
 
   header {
@@ -87,7 +100,11 @@ button {
   }
 
   p {
-    font-size: 18px;
+    font-size: 22px;
+  }
+
+  label {
+    font-size: 22px;
   }
 
   form {
@@ -97,7 +114,7 @@ button {
   }
     
   h1 {
-    font-size: 2em;
+    font-size: 2.5em;
   }
 
   h2 {
